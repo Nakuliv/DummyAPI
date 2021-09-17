@@ -69,7 +69,7 @@ namespace DummyAPI
             get => Player.Rotation;
             set
             {
-                Player.Rotation = value;
+                Player.Rotations = value;
                 Player.CameraTransform.rotation = Quaternion.Euler(new Vector3(value.x, value.y, 90f));
             }
         }
