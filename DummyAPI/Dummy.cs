@@ -19,6 +19,22 @@ namespace DummyAPI
         /// <summary>
         /// Get / Set the current Role of the Dummy
         /// </summary>
+
+        public static Dummy Get(Player p)
+        {
+            if (Extensions.Dummies.TryGetValue(p.GameObject, out Dummy npc))
+            {
+                return npc;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public HashSet<RoleType> VisibleForRoles { get; set; } = new HashSet<RoleType>();
+        public HashSet<Player> VisibleForPlayers { get; set; } = new HashSet<Player>();
+
         public RoleType Role
         {
             get => GameObject.GetComponent<CharacterClassManager>().CurClass;
@@ -54,7 +70,7 @@ namespace DummyAPI
             set
             {
                 Player.Rotation = value;
-                Player.CameraReference().rotation = Quaternion.Euler(new Vector3(value.x, value.y, 90f));
+                Player.CameraTransform.rotation = Quaternion.Euler(new Vector3(value.x, value.y, 90f));
             }
         }
 
@@ -106,6 +122,9 @@ namespace DummyAPI
 
         public MovementDirection Direction { get; set; }
 
+        public virtual bool DisplayInRA { get; set; } = false;
+        public virtual bool AffectEndConditions { get; set; } = false;
+
         public float SneakSpeed { get; set; } = 1.8f;
 
         public float WalkSpeed { get; set; }
@@ -147,7 +166,7 @@ namespace DummyAPI
                 {
                     case MovementDirection.Forward:
                         Player.AnimationController().Networkspeed = new Vector2(speed, 0f);
-                        var pos = Position + Player.CameraReference().forward / 10 * speed;
+                        var pos = Position + Player.CameraTransform.forward / 10 * speed;
 
                         if (!Physics.Linecast(Position, pos, Player.PlayerMovementSync().CollidableSurfaces))
                             Player.PlayerMovementSync().OverridePosition(pos, 0f, true);
@@ -156,7 +175,7 @@ namespace DummyAPI
 
                     case MovementDirection.BackWards:
                         Player.AnimationController().Networkspeed = new Vector2(-speed, 0f);
-                        pos = Position - Player.CameraReference().forward / 10 * speed;
+                        pos = Position - Player.CameraTransform.forward / 10 * speed;
 
                         if (!Physics.Linecast(Position, pos, Player.PlayerMovementSync().CollidableSurfaces))
                             Player.PlayerMovementSync().OverridePosition(pos, 0f, true);
@@ -165,7 +184,7 @@ namespace DummyAPI
 
                     case MovementDirection.Right:
                         Player.AnimationController().Networkspeed = new Vector2(0f, speed);
-                        pos = Position + Quaternion.AngleAxis(90, Vector3.up) * Player.CameraReference().forward / 10 * speed;
+                        pos = Position + Quaternion.AngleAxis(90, Vector3.up) * Player.CameraTransform.forward / 10 * speed;
 
                         if (!Physics.Linecast(Position, pos, Player.PlayerMovementSync().CollidableSurfaces))
                             Player.PlayerMovementSync().OverridePosition(pos, 0f, true);
@@ -174,7 +193,7 @@ namespace DummyAPI
 
                     case MovementDirection.Left:
                         Player.AnimationController().Networkspeed = new Vector2(0f, -speed);
-                        pos = Position - Quaternion.AngleAxis(90, Vector3.up) * Player.CameraReference().forward / 10 * speed;
+                        pos = Position - Quaternion.AngleAxis(90, Vector3.up) * Player.CameraTransform.forward / 10 * speed;
 
                         if (!Physics.Linecast(Position, pos, Player.PlayerMovementSync().CollidableSurfaces))
                             Player.PlayerMovementSync().OverridePosition(pos, 0f, true);
@@ -208,6 +227,14 @@ namespace DummyAPI
                     NetworkManager.singleton.playerPrefab);
 
             GameObject = obj;
+
+            PlayerManager.AddPlayer(GameObject, default);
+
+            Player ply_obj = new Player(GameObject);
+            Player.Dictionary.Add(GameObject, ply_obj);
+
+            Player.IdsCache.Add(ply_obj.Id, ply_obj);
+
             Player = Player.Get(GameObject);
 
 
@@ -229,7 +256,7 @@ namespace DummyAPI
             MEC.Timing.RunCoroutine(Update());
 
             NetworkServer.Spawn(GameObject);
-            Extensions.Dummies.Add(this);
+            Extensions.Dummies.Add(GameObject, this);
         }
 
         public void RotateToPosition(Vector3 pos)
@@ -244,7 +271,7 @@ namespace DummyAPI
         public void Despawn()
         {
             NetworkServer.UnSpawn(GameObject);
-            Extensions.Dummies.Remove(this);
+            Extensions.Dummies.Remove(GameObject);
         }
 
         /// <summary>
@@ -253,7 +280,7 @@ namespace DummyAPI
         public void Spawn()
         {
             NetworkServer.Spawn(GameObject);
-            Extensions.Dummies.Add(this);
+            Extensions.Dummies.Add(GameObject, this);
         }
 
         /// <summary>
@@ -262,7 +289,7 @@ namespace DummyAPI
         public void Destroy()
         {
             Object.Destroy(GameObject);
-            Extensions.Dummies.Remove(this);
+            Extensions.Dummies.Remove(GameObject);
         }
 
         public static Dummy CreateDummy(Vector3 pos, Quaternion rot, RoleType role = RoleType.ClassD, string name = "(null)", string badgetext = "", string badgecolor = "")

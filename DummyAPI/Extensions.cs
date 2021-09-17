@@ -23,13 +23,42 @@ namespace DummyAPI
             set => ServerConfigSynchronizer.Singleton.NetworkHumanSprintSpeedMultiplier = value;
         }
 
+        public static bool IsDummy(this GameObject p)
+        {
+            return Dummies.ContainsKey(p);
+        }
+
+        public static bool IsDummy(this Player p)
+        {
+            return p.GameObject.IsDummy();
+        }
+
+        public static bool IsDummy(this ReferenceHub p)
+        {
+            return p.gameObject.IsDummy();
+        }
+
+        public static Dummy AsDummy(this Player p)
+        {
+            return p.IsDummy() ? Dummies[p.GameObject] : null;
+        }
+
+        public static Dummy AsDummy(this GameObject p)
+        {
+            return p.IsDummy() ? Dummies[p] : null;
+        }
+
+        public static Dummy AsDummy(this ReferenceHub p)
+        {
+            return AsDummy(p.gameObject);
+        }
+
         public static AnimationController AnimationController(this Player p) => p.ReferenceHub.animationController;
         public static PlayerMovementSync PlayerMovementSync(this Player p) => p.ReferenceHub.playerMovementSync;
-        public static Transform CameraReference(this Player p) => p.ReferenceHub.PlayerCameraReference;
         public static NicknameSync NicknameSync(this Player p) => p.ReferenceHub.nicknameSync;
         public static QueryProcessor QueryProcessor(this Player p) => p.ReferenceHub.queryProcessor;
         public static CharacterClassManager ClassManager(this Player p) => p.ReferenceHub.characterClassManager;
-        public static bool IsDummy { get; internal set; } = false;
-        public static List<Dummy> Dummies = new List<Dummy>();
+
+        public static Dictionary<GameObject, Dummy> Dummies { get; } = new Dictionary<GameObject, Dummy>();
     }
 }

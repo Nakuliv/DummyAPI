@@ -84,3 +84,5 @@ C:\Users\Jakub\source\repos\Cwaniaak\DummyAPI\Example\bin\Debug\UnityEngine.Inpu
 C:\Users\Jakub\source\repos\Cwaniaak\DummyAPI\Example\bin\Debug\System.Numerics.Vectors.dll
 C:\Users\Jakub\source\repos\Cwaniaak\DummyAPI\Example\bin\Debug\DummyAPI.pdb
 C:\Users\Jakub\source\repos\Cwaniaak\DummyAPI\Example\bin\Debug\CommandSystem.Core.dll
+C:\Users\Jakub\source\repos\Cwaniaak\DummyAPI\Example\bin\Debug\0Harmony.dll
+C:\Users\Jakub\source\repos\Cwaniaak\DummyAPI\Example\bin\Debug\0Harmony.xml

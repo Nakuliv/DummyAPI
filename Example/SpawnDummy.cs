@@ -15,16 +15,14 @@ namespace Example
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     internal class SpawnDummy : ICommand
     {
-        private Dummy _dummy;
-        public string Command { get; } = "spawnscp372";
+        public string Command { get; } = "spawndummy";
 
         public string[] Aliases { get; } = new string[]
         {
-            "spawndummy",
-            "spdummy",
+            "spdummy"
         };
 
-        public string Description { get; } = "Spawn SCP-372";
+        public string Description { get; } = "Spawn Dummy";
 
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
@@ -47,26 +45,47 @@ namespace Example
                 return false;
             }
 
-            _dummy = new Dummy(player.Position, new Quaternion(), RoleType.Tutorial);
-            Timing.RunCoroutine(Walk());
+            var _dummy = new Dummy(player.Position, new Quaternion(), RoleType.Tutorial);
+            Timing.RunCoroutine(Walk(_dummy, player));
             response = $"Spawned Dummy!";
             return true;
         }
 
-        private IEnumerator<float> Walk()
+        private IEnumerator<float> Walk(Dummy _dummy, Player Owner)
         {
             for (; ; )
             {
-                var _dood = Player.Get(2);
                 yield return Timing.WaitForSeconds(0.1f);
 
-                _dummy.Movement = PlayerMovementState.Walking;
-                _dummy.Direction = MovementDirection.Forward;
-                _dummy.RotateToPosition(_dood.Position);
-                float distance = Vector3.Distance(_dood.Position, _dummy.Position);
+                if (Owner == null) _dummy.Destroy();
+                if (_dummy.GameObject == null) yield break;
+                _dummy.RotateToPosition(Owner.Position);
 
-                if (distance <= 1.25f)
+                var distance = Vector3.Distance(Owner.Position, _dummy.Position);
+
+                if ((PlayerMovementState)Owner.AnimationController().Network_curMoveState == PlayerMovementState.Sneaking) _dummy.Movement = PlayerMovementState.Sneaking;
+                else _dummy.Movement = PlayerMovementState.Sprinting;
+
+                if (_dummy.Movement == PlayerMovementState.Sneaking)
+                {
+                    if (distance > 5f) _dummy.Position = Owner.Position;
+
+                    else if (distance > 1f) _dummy.Direction = MovementDirection.Forward;
+
+                    else if (distance <= 1f) _dummy.Direction = MovementDirection.Stop;
+
+                    continue;
+                }
+
+                if (distance > 10f)
+                    _dummy.Position = Owner.Position;
+
+                else if (distance > 2f)
+                    _dummy.Direction = MovementDirection.Forward;
+
+                else if (distance <= 1.25f)
                     _dummy.Direction = MovementDirection.Stop;
+
             }
         }
     }

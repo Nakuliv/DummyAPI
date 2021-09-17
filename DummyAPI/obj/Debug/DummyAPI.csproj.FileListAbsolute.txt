@@ -81,3 +81,5 @@ C:\Users\Jakub\Source\Repos\Cwaniaak\DummyAPI\DummyAPI\obj\Debug\DummyAPI.csproj
 C:\Users\Jakub\Source\Repos\Cwaniaak\DummyAPI\DummyAPI\obj\Debug\DummyAPI.csproj.CopyComplete
 C:\Users\Jakub\Source\Repos\Cwaniaak\DummyAPI\DummyAPI\obj\Debug\DummyAPI.dll
 C:\Users\Jakub\Source\Repos\Cwaniaak\DummyAPI\DummyAPI\obj\Debug\DummyAPI.pdb
+C:\Users\Jakub\source\repos\Cwaniaak\DummyAPI\DummyAPI\bin\Debug\0Harmony.dll
+C:\Users\Jakub\source\repos\Cwaniaak\DummyAPI\DummyAPI\bin\Debug\0Harmony.xml

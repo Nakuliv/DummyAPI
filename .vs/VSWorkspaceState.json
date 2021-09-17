@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\DummyAPI"
+    "\\DummyAPI",
+    "\\Runtime"
   ],
   "SelectedNode": "\\DummyAPI.sln",
   "PreviewInSolutionExplorer": false

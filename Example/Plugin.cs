@@ -11,6 +11,8 @@ namespace Example
         public override Version Version { get; } = new Version(1, 0, 0);
         public override Version RequiredExiledVersion { get; } = new Version(3, 0, 0);
 
+        public static HarmonyLib.Harmony Harmony { get; private set; }
+
         public override void OnEnabled()
         {
             Plugin.Singleton = this;
