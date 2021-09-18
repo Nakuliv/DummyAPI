@@ -58,7 +58,6 @@ namespace DummyAPI
         public static NicknameSync NicknameSync(this Player p) => p.ReferenceHub.nicknameSync;
         public static QueryProcessor QueryProcessor(this Player p) => p.ReferenceHub.queryProcessor;
         public static CharacterClassManager ClassManager(this Player p) => p.ReferenceHub.characterClassManager;
-
         public static Dictionary<GameObject, Dummy> Dummies { get; } = new Dictionary<GameObject, Dummy>();
     }
 }
